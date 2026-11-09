@@ -38,5 +38,5 @@ BASIC GITHUB ETTIQUETTE RULES
 
 <img width="1354" height="736" alt="image" src="https://github.com/user-attachments/assets/ef449ac8-581d-4b15-a197-436f4cf1eea5" />
 
-5. tapos na
+5. tapos na, ALSO message mo gc pag tapos na para ma merge ko yung code 
 
