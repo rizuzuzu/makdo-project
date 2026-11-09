@@ -1,4 +1,3 @@
-﻿
 using System;
 
 namespace makdo_project
@@ -7,6 +6,7 @@ namespace makdo_project
     {
         // ===================== SETTINGS =====================
 
+        // FOOD MENU - SANTOS
         // TODO: mag add ng food names, prices, and quantities using arrays
 
         const string RecordsFolder = "records";
@@ -108,30 +108,42 @@ namespace makdo_project
         static void CustomerView()
         {
             // TODO: mag add ng customer ordering process
+            // CUSTOMER VIEW - UNASSIGNED
         }
 
         static void ShowFoodMenu()
         {
+            // FOOD MENU - SANTOS
             // TODO: display food items and prices
         }
 
         static void TakeOrder()
         {
+            // FOOD SELECTION - PACHECO
             // TODO: let customers select food items
         }
 
         static void AddItem()
         {
+            // QUANTITY SELECTION - EDYRIE
             // TODO: iask ang customer kung ilang quantity needed for each item and add to order
+        }
+
+        static void ShowOrderSummary()
+        {
+            // ORDER SUMMARY - MHARA
+            // TODO: display selected food items, quantities, and prices
         }
 
         static void CalculateTotal()
         {
+            // TOTAL CALCULATION - VALMONTE
             // TODO: calculate the total price
         }
 
         static void ConfirmOrder()
         {
+            // ORDER CONFIRMATION - KIEL
             // TODO: ask customer to confirm or cancel
         }
 
@@ -139,6 +151,7 @@ namespace makdo_project
 
         static void ProcessPayment()
         {
+            // PAYMENT AND CHANGE - ALYSSA
             // TODO: accept payment and calculate change
         }
 
@@ -146,11 +159,13 @@ namespace makdo_project
 
         static void GenerateOrderID()
         {
+            // RECEIPT AND ORDER ID - VAN
             // TODO: craete a unique order id
         }
 
         static void PrintReceipt()
         {
+            // RECEIPT AND ORDER ID - VAN
             // TODO: display the receipt
         }
 
@@ -158,11 +173,13 @@ namespace makdo_project
 
         static void SaveOrder()
         {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
             // TODO: save mga paid orders into a text file
         }
 
         static void ReadOrders()
         {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
             // TODO: read saved orders from the text file
         }
 
@@ -202,11 +219,13 @@ namespace makdo_project
 
         static void FindOrder()
         {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
             // TODO: search for an order using the order id
         }
 
         static void ShowSales()
         {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
             // TODO: display completed orders and total sales
         }
 
