@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace makdo-project
+namespace makdo_project
 {
     internal class Program
     {
