@@ -122,7 +122,11 @@ namespace makdo_project
 
         static void AddItem()
         {
-            // TODO: iask ang customer kung ilang quantity needed for each item and add to order
+            //replace foodNames with the actual length name of the array, kasi di ko alam kung tama
+            for (int i = 0; i < foodNames.Length; i++) { int quantity = 0; bool isValid = false; while (!isValid) 
+                { Console.WriteLine($"Enter quantity for {foodNames[i]}: "); string input = Console.ReadLine(); 
+                    if (int.TryParse(input, out quantity) && quantity > 0) { isValid = true; } else { ShowError("Invalid quantity. Please enter a valid number."); } }
+                quantities[i] = quantity; }
         }
 
         static void CalculateTotal()
