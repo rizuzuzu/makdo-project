@@ -1,5 +1,8 @@
-using System;
-
+﻿using System;
+/*===================================
+            GROUP 3 MAKDO
+=====================================
+*/
 namespace makdo_project
 {
     internal class Program
@@ -7,7 +10,15 @@ namespace makdo_project
         // ===================== SETTINGS =====================
 
         // FOOD MENU - SANTOS
-        // TODO: mag add ng food names, prices, and quantities using arrays
+
+
+        static string[] foodmenu = ["Chicken Meal", "Burger", "Fries", "Soft Drink"];
+        static decimal[] foodprices = [120.00m, 60.00m, 45.00m, 30.00m];
+        static int[] foodqty = new int[foodmenu.Length];
+
+        static string[] drinksmenu = ["Coca Cola", "McFlurry", "Sprite", "Iced Tea", "Lemonade"];
+        static decimal[] drinksprices = [35.00m, 60.00m, 35.00m, 30.00m, 35.00m];
+        static int[] drinksqty = new int[drinksmenu.Length];
 
         const string RecordsFolder = "records";
         const string OrdersFileName = "orders.txt";
@@ -105,16 +116,172 @@ namespace makdo_project
 
         // ===================== CUSTOMER VIEW =====================
 
+        // CUSTOMER VIEW - VILLEGAS
+
+        static bool orderConfirmed = false;      
+        static bool paymentSuccessful = false;   
+        static decimal orderTotal = 0;          
+
         static void CustomerView()
         {
-            // TODO: mag add ng customer ordering process
-            // CUSTOMER VIEW - UNASSIGNED
+
+            orderConfirmed = false;
+            paymentSuccessful = false;
+            orderTotal = 0;
+
+         
+            bool ordering = true;
+
+            while (ordering)
+            {
+                Console.Clear();
+
+                ShowFoodMenu();   // display the menu
+                TakeOrder();      // customer picks an item
+                AddItem();        // ask quantity and add it to the order
+
+                string next = AskNextStep();
+
+                if (next == "X")
+                {
+                    CancelAndReturn("Order cancelled.");
+                    return;
+                }
+
+                if (next == "N")
+                {
+                    CalculateTotal();   // sets orderTotal
+
+                    if (orderTotal <= 0)
+                    {
+                        ShowError("Your order is empty. Please add at least one item.");
+                        Console.WriteLine("Press any key to go back to the menu...");
+                        Console.ReadKey(true);
+                        continue;   // back to the menu
+                    }
+
+                    ordering = false;   // done ordering, go to checkout
+                }
+                
+            }
+
+           
+            Console.Clear();
+            ShowOrderSummary();   
+            ConfirmOrder();      
+
+            if (!orderConfirmed)
+            {
+                CancelAndReturn("Order cancelled. Nothing was saved.");
+                return;
+            }
+
+          
+            ProcessPayment();     
+
+            if (!paymentSuccessful)
+            {
+                CancelAndReturn("Payment cancelled. Order was not saved.");
+                return;
+            }
+
+          
+            GenerateOrderID();    
+            SaveOrder();         
+            PrintReceipt();       
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Press any key to return to the main menu...");
+            Console.ResetColor();
+            Console.ReadKey(true);
         }
+
+        // Asks what the customer wants to do after adding an item.
+        // Returns "Y" (add another item), "N" (checkout) or "X" (cancel order).
+        static string AskNextStep()
+        {
+            while (true)
+            {
+                Console.WriteLine();
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("[Y] Add another item");
+                Console.WriteLine("[N] Done ordering, go to checkout");
+                Console.WriteLine("[X] Cancel order and go back");
+                Console.ResetColor();
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Enter choice: ");
+                Console.ResetColor();
+
+                string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (answer == "Y" || answer == "N" || answer == "X")
+                {
+                    return answer;
+                }
+
+                ShowError("Invalid choice. Please enter Y, N, or X.");
+            }
+        }
+
+        // Shows a message and waits before going back to the main menu.
+        static void CancelAndReturn(string message)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ResetColor();
+            Console.WriteLine("Press any key to return to the main menu...");
+            Console.ReadKey(true);
+        }
+
+        // ===================== FOOD MENU (SANTOS) =====================
 
         static void ShowFoodMenu()
         {
             // FOOD MENU - SANTOS
-            // TODO: display food items and prices
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("========================================");
+            Console.WriteLine("               MAKDO MENU");
+            Console.WriteLine("========================================");
+            Console.ResetColor();
+
+           
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(" FOODS");
+            Console.ResetColor();
+
+            for (int i = 0; i < foodmenu.Length; i++)
+            {
+                int number = i + 1;
+                PrintMenuLine(number, foodmenu[i], foodprices[i]);
+            }
+
+            Console.WriteLine();
+
+            
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(" DRINKS");
+            Console.ResetColor();
+
+            for (int i = 0; i < drinksmenu.Length; i++)
+            {
+                int number = foodmenu.Length + i + 1;
+                PrintMenuLine(number, drinksmenu[i], drinksprices[i]);
+            }
+
+            Console.WriteLine("========================================");
+        }
+
+        
+        static void PrintMenuLine(int number, string name, decimal price)
+        {
+            string tag = "[" + number + "]";
+            string priceText = "P" + price.ToString("F2");
+
+            Console.WriteLine("  " + tag.PadRight(5) + name.PadRight(25) + priceText.PadLeft(8));
         }
 
         static void TakeOrder()
