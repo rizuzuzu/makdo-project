@@ -34,9 +34,26 @@ BASIC GITHUB ETTIQUETTE RULES
 4. click propose changes
 
 <img width="1648" height="883" alt="image" src="https://github.com/user-attachments/assets/96b851a6-866b-46da-a506-e2f2e83c3f58" />
-5. click create pull request, make sure na naka name ung title sa part nyo ex: Food Menu o Food Selection
+5. click create pull request, make sure na naka name ung title sa part nyo ex: Food Menu o Food Selectionv
+
 
 <img width="1354" height="736" alt="image" src="https://github.com/user-attachments/assets/ef449ac8-581d-4b15-a197-436f4cf1eea5" />
 
-5. tapos na, ALSO message mo gc pag tapos na para ma merge ko yung code 
+6. tapos na, ALSO message mo gc pag tapos na para ma merge ko yung code 
+
+# PANO MAGUPLOAD PAG NAKAPHONE
+
+1. click makdo project
+<img width="750" height="1334" alt="IMG_5210" src="https://github.com/user-attachments/assets/5909e152-1886-43fc-beae-1758b6ec6f01" />
+2. click the three lines
+<img width="750" height="1334" alt="IMG_5211" src="https://github.com/user-attachments/assets/a75b413f-cb09-4823-bc2b-900a926e2e10" />
+3. upload file
+<img width="730" height="1334" alt="IMG_5212" src="https://github.com/user-attachments/assets/bbe0bd2c-9ad9-4f6a-b4a3-ba79dedbcf01" />
+4. click choose your files
+<img width="375" height="667" alt="IMG_5213" src="https://github.com/user-attachments/assets/f8357cfc-57aa-464d-bd8f-1d51cb39691d" />
+5.scroll sa baba, click create new branch and rename mo sa part mo
+<img width="375" height="667" alt="IMG_5214" src="https://github.com/user-attachments/assets/3b7c4b29-c8ed-4fdd-a36d-a442f8a850a2" />
+6. click propose changes
+
+
 
