@@ -290,19 +290,42 @@ namespace makdo_project
             // TODO: let customers select food items
         }
 
+        
         static void AddItem()
+       {
+           // QUANTITY SELECTION - EDYRIE
+        if (selectedItem == 0)
+       {
+         return;
+       }
+
+        int quantity = 0;
+        bool isValid = false;
+
+        while (!isValid)
+       {
+        Console.Write("Enter quantity for " + ItemName(selectedItem) + ": ");
+
+        string input = (Console.ReadLine() ?? "").Trim();
+
+        if (int.TryParse(input, out quantity) &&
+            quantity > 0 &&
+            quantity <= MaxQtyPerItem - ItemQty(selectedItem))
         {
-            // ======= QUANTITY SELECTION - EDYRIE ======= //
-            for (int i = 0; i < foodNames.Length; i++)
-            {
-                int quantity = 0; bool isValid = false; while (!isValid)
-                {
-                    Console.WriteLine($"Enter quantity for {foodNames[i]}: "); string input = Console.ReadLine();
-                    if (int.TryParse(input, out quantity) && quantity > 0) { isValid = true; } else { ShowError("Invalid quantity. Please enter a valid number."); }
-                }
-                quantities[i] = quantity;
-            }
+            isValid = true;
         }
+        else
+        {
+            ShowError("Invalid quantity. Please enter a quantity from 1 to " +
+                      (MaxQtyPerItem - ItemQty(selectedItem)) + ".");
+        }
+      }
+
+      AddQty(selectedItem, quantity);
+
+      ShowSuccess(quantity + " " + ItemName(selectedItem) + "(s) added to your cart!");
+     }
+
 
         static void ShowOrderSummary()
         {
