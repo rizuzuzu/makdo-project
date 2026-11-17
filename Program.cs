@@ -1,0 +1,439 @@
+﻿using System;
+/*===================================
+            GROUP 3 MAKDO
+=====================================
+*/
+namespace makdo_project
+{
+    internal class Program
+    {
+        // ===================== SETTINGS =====================
+
+        // FOOD MENU - SANTOS
+
+
+        static string[] foodmenu = ["Chicken Meal", "Burger", "Fries", "Soft Drink"];
+        static decimal[] foodprices = [120.00m, 60.00m, 45.00m, 30.00m];
+        static int[] foodqty = new int[foodmenu.Length];
+
+        static string[] drinksmenu = ["Coca Cola", "McFlurry", "Sprite", "Iced Tea", "Lemonade"];
+        static decimal[] drinksprices = [35.00m, 60.00m, 35.00m, 30.00m, 35.00m];
+        static int[] drinksqty = new int[drinksmenu.Length];
+
+        const string RecordsFolder = "records";
+        const string OrdersFileName = "orders.txt";
+
+        // ===================== MAIN =====================
+
+        static void Main()
+        {
+            bool running = true;
+
+            while (running)
+            {
+                ShowMainMenu();
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Enter choice: ");
+                Console.ResetColor();
+
+                string choice = Console.ReadLine() ?? "";
+
+                switch (choice)
+                {
+                    case "1":
+                        CustomerView();
+                        break;
+
+                    case "2":
+                        CashierView();
+                        break;
+
+                    case "3":
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("\nThank you for using MAKDO!");
+                        Console.ResetColor();
+
+                        running = false;
+                        break;
+
+                    default:
+                        ShowError("Invalid choice. Please enter 1, 2, or 3.");
+                        break;
+                }
+            }
+        }
+
+        // ===================== MAIN MENU =====================
+
+        static void ShowMainMenu()
+        {
+            Console.Clear();
+
+            // MAKDO LOGO
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+            Console.WriteLine(@" _____ ______   ________  ___  __    ________  ________");
+            Console.WriteLine(@"|\   _ \  _   \|\   __  \|\  \|\  \ |\   ___ \|\   __  \");
+            Console.WriteLine(@"\ \  \\\__\ \  \ \  \|\  \ \  \/  /|\ \  \_|\ \ \  \|\  \");
+            Console.WriteLine(@" \ \  \\|__| \  \ \   __  \ \   ___  \ \  \ \\ \ \  \\\  \");
+            Console.WriteLine(@"  \ \  \    \ \  \ \  \ \  \ \  \\ \  \ \  \_\\ \ \  \\\  \");
+            Console.WriteLine(@"   \ \__\    \ \__\ \__\ \__\ \__\\ \__\ \_______\ \_______\");
+            Console.WriteLine(@"    \|__|     \|__|\|__|\|__|\|__| \|__|\|_______|\|_______|");
+
+            Console.ResetColor();
+
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("          MAKDO SELF-SERVICE KIOSK");
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("          Bigger. Tastier. Better.");
+            Console.ResetColor();
+
+            Console.WriteLine();
+            Console.WriteLine("========================================");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("               MAIN MENU");
+            Console.ResetColor();
+
+            Console.WriteLine("========================================");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("[1] Customer View");
+            Console.WriteLine("[2] Cashier View");
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[3] Exit");
+            Console.ResetColor();
+
+            Console.WriteLine("========================================");
+        }
+
+        // ===================== CUSTOMER VIEW =====================
+
+        // CUSTOMER VIEW - VILLEGAS
+
+        static bool orderConfirmed = false;      
+        static bool paymentSuccessful = false;   
+        static decimal orderTotal = 0;          
+
+        static void CustomerView()
+        {
+
+            orderConfirmed = false;
+            paymentSuccessful = false;
+            orderTotal = 0;
+
+         
+            bool ordering = true;
+
+            while (ordering)
+            {
+                Console.Clear();
+
+                ShowFoodMenu();   // display the menu
+                TakeOrder();      // customer picks an item
+                AddItem();        // ask quantity and add it to the order
+
+                string next = AskNextStep();
+
+                if (next == "X")
+                {
+                    CancelAndReturn("Order cancelled.");
+                    return;
+                }
+
+                if (next == "N")
+                {
+                    CalculateTotal();   // sets orderTotal
+
+                    if (orderTotal <= 0)
+                    {
+                        ShowError("Your order is empty. Please add at least one item.");
+                        Console.WriteLine("Press any key to go back to the menu...");
+                        Console.ReadKey(true);
+                        continue;   // back to the menu
+                    }
+
+                    ordering = false;   // done ordering, go to checkout
+                }
+                
+            }
+
+           
+            Console.Clear();
+            ShowOrderSummary();   
+            ConfirmOrder();      
+
+            if (!orderConfirmed)
+            {
+                CancelAndReturn("Order cancelled. Nothing was saved.");
+                return;
+            }
+
+          
+            ProcessPayment();     
+
+            if (!paymentSuccessful)
+            {
+                CancelAndReturn("Payment cancelled. Order was not saved.");
+                return;
+            }
+
+          
+            GenerateOrderID();    
+            SaveOrder();         
+            PrintReceipt();       
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Press any key to return to the main menu...");
+            Console.ResetColor();
+            Console.ReadKey(true);
+        }
+
+        // Asks what the customer wants to do after adding an item.
+        // Returns "Y" (add another item), "N" (checkout) or "X" (cancel order).
+        static string AskNextStep()
+        {
+            while (true)
+            {
+                Console.WriteLine();
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("[Y] Add another item");
+                Console.WriteLine("[N] Done ordering, go to checkout");
+                Console.WriteLine("[X] Cancel order and go back");
+                Console.ResetColor();
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Enter choice: ");
+                Console.ResetColor();
+
+                string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (answer == "Y" || answer == "N" || answer == "X")
+                {
+                    return answer;
+                }
+
+                ShowError("Invalid choice. Please enter Y, N, or X.");
+            }
+        }
+
+        // Shows a message and waits before going back to the main menu.
+        static void CancelAndReturn(string message)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ResetColor();
+            Console.WriteLine("Press any key to return to the main menu...");
+            Console.ReadKey(true);
+        }
+
+        // ===================== FOOD MENU (SANTOS) =====================
+
+        static void ShowFoodMenu()
+        {
+            // FOOD MENU - SANTOS
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("========================================");
+            Console.WriteLine("               MAKDO MENU");
+            Console.WriteLine("========================================");
+            Console.ResetColor();
+
+           
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(" FOODS");
+            Console.ResetColor();
+
+            for (int i = 0; i < foodmenu.Length; i++)
+            {
+                int number = i + 1;
+                PrintMenuLine(number, foodmenu[i], foodprices[i]);
+            }
+
+            Console.WriteLine();
+
+            
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(" DRINKS");
+            Console.ResetColor();
+
+            for (int i = 0; i < drinksmenu.Length; i++)
+            {
+                int number = foodmenu.Length + i + 1;
+                PrintMenuLine(number, drinksmenu[i], drinksprices[i]);
+            }
+
+            Console.WriteLine("========================================");
+        }
+
+        
+        static void PrintMenuLine(int number, string name, decimal price)
+        {
+            string tag = "[" + number + "]";
+            string priceText = "P" + price.ToString("F2");
+
+            Console.WriteLine("  " + tag.PadRight(5) + name.PadRight(25) + priceText.PadLeft(8));
+        }
+
+        static void TakeOrder()
+        {
+            // FOOD SELECTION - PACHECO
+            // TODO: let customers select food items
+        }
+
+        
+        static void AddItem()
+       {
+           // QUANTITY SELECTION - EDYRIE
+        if (selectedItem == 0)
+       {
+         return;
+       }
+
+        int quantity = 0;
+        bool isValid = false;
+
+        while (!isValid)
+       {
+        Console.Write("Enter quantity for " + ItemName(selectedItem) + ": ");
+
+        string input = (Console.ReadLine() ?? "").Trim();
+
+        if (int.TryParse(input, out quantity) &&
+            quantity > 0 &&
+            quantity <= MaxQtyPerItem - ItemQty(selectedItem))
+        {
+            isValid = true;
+        }
+        else
+        {
+            ShowError("Invalid quantity. Please enter a quantity from 1 to " +
+                      (MaxQtyPerItem - ItemQty(selectedItem)) + ".");
+        }
+      }
+
+      AddQty(selectedItem, quantity);
+
+      ShowSuccess(quantity + " " + ItemName(selectedItem) + "(s) added to your cart!");
+     }
+
+
+        static void ShowOrderSummary()
+        {
+            // ORDER SUMMARY - MHARA
+            // TODO: display selected food items, quantities, and prices
+        }
+
+        static void CalculateTotal()
+        {
+            // TOTAL CALCULATION - VALMONTE
+            // TODO: calculate the total price
+        }
+
+        static void ConfirmOrder()
+        {
+            // ORDER CONFIRMATION - KIEL
+            // TODO: ask customer to confirm or cancel
+        }
+
+        // ===================== PAYMENT =====================
+
+        static void ProcessPayment()
+        {
+            // PAYMENT AND CHANGE - ALYSSA
+            // TODO: accept payment and calculate change
+        }
+
+        // ===================== RECEIPT =====================
+
+        static void GenerateOrderID()
+        {
+            // RECEIPT AND ORDER ID - VAN
+            // TODO: craete a unique order id
+        }
+
+        static void PrintReceipt()
+        {
+            // RECEIPT AND ORDER ID - VAN
+            // TODO: display the receipt
+        }
+
+        // ===================== FILE HANDLING =====================
+
+        static void SaveOrder()
+        {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
+            // TODO: save mga paid orders into a text file
+        }
+
+        static void ReadOrders()
+        {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
+            // TODO: read saved orders from the text file
+        }
+
+        // ===================== CASHIER VIEW =====================
+
+        static void CashierView()
+        {
+            Console.Clear();
+
+            Console.WriteLine("\n========== CASHIER VIEW ==========");
+            Console.WriteLine("[1] View Order by ID");
+            Console.WriteLine("[2] View Sales");
+            Console.WriteLine("[3] Back to Main Menu");
+            Console.WriteLine("==================================");
+            Console.Write("Enter choice: ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    FindOrder();
+                    break;
+
+                case "2":
+                    ShowSales();
+                    break;
+
+                case "3":
+                    return;
+
+                default:
+                    ShowError("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+
+        static void FindOrder()
+        {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
+            // TODO: search for an order using the order id
+        }
+
+        static void ShowSales()
+        {
+            // CASHIER VIEW AND FILE HANDLING - SHIENA
+            // TODO: display completed orders and total sales
+        }
+
+        // ===================== HELPER METHODS aka error reporting =====================
+
+        static void ShowError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+    }
+}
