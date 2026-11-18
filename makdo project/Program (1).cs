@@ -328,7 +328,40 @@ namespace makdo_project
         static void AddItem()
         {
             // QUANTITY SELECTION - EDYRIE
-            // TODO: iask ang customer kung ilang quantity needed for each item and add to order
+            if (selectedItem == 0)
+            {
+                return;   
+            }
+
+            Console.WriteLine("Selected: " + ItemName(selectedItem) + " - " + Money(ItemPrice(selectedItem)));
+
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Enter quantity (1 to " + MaxQtyPerItem + "): ");
+                Console.ResetColor();
+
+                string text = (Console.ReadLine() ?? "").Trim();
+
+                
+                int quantity;
+                if (!int.TryParse(text, out quantity) || quantity < 1 || quantity > MaxQtyPerItem)
+                {
+                    ShowError("Quantity must be a whole number from 1 to " + MaxQtyPerItem + ".");
+                    continue;
+                }
+
+                
+                if (ItemQty(selectedItem) + quantity > MaxQtyPerItem)
+                {
+                    ShowError("Maximum is " + MaxQtyPerItem + " per item. You already have " + ItemQty(selectedItem) + ".");
+                    continue;
+                }
+
+                AddQty(selectedItem, quantity);
+                ShowSuccess("Added: " + quantity + " x " + ItemName(selectedItem));
+                return;
+            }
         }
 
         // ===================== ORDER SUMMARY (MHARA) =====================
@@ -336,7 +369,13 @@ namespace makdo_project
         static void ShowOrderSummary()
         {
             // ORDER SUMMARY - MHARA
-            // TODO: display selected food items, quantities, and prices
+            ShowTitle("YOUR ORDER");
+
+            PrintCartLines();
+
+            Console.WriteLine(Dash());
+            PrintTotalLine("TOTAL", Money(orderTotal));
+            Console.WriteLine(Bar());
         }
 
         // ===================== TOTAL (VALMONTE) =====================
