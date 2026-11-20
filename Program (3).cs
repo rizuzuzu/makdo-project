@@ -369,7 +369,13 @@ namespace makdo_project
         static void ShowOrderSummary()
         {
             // ORDER SUMMARY - MHARA
-            // TODO: display selected food items, quantities, and prices
+            ShowTitle("YOUR ORDER");
+
+            PrintCartLines();
+
+            Console.WriteLine(Dash());
+            PrintTotalLine("TOTAL", Money(orderTotal));
+            Console.WriteLine(Bar());
         }
 
         // ===================== TOTAL (VALMONTE) =====================
@@ -378,8 +384,14 @@ namespace makdo_project
         static decimal CalculateTotal()
         {
             // TOTAL CALCULATION - VALMONTE
-            // TODO: calculate the total price
-            return 0;   // placeholder so the project compiles (this method must return a decimal)
+            decimal total = 0;
+
+            for (int number = 1; number <= TotalItems(); number++)
+            {
+                total += ItemQty(number) * ItemPrice(number);
+            }
+
+            return total;
         }
 
         // ===================== CONFIRMATION (KIEL) =====================
@@ -387,7 +399,22 @@ namespace makdo_project
         static void ConfirmOrder()
         {
             // ORDER CONFIRMATION - KIEL
-            // TODO: ask customer to confirm or cancel
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("[Y] Confirm  [A] Add more items  [N] Cancel: ");
+                Console.ResetColor();
+
+                string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (answer == "Y" || answer == "A" || answer == "N")
+                {
+                    reviewChoice = answer;
+                    return;
+                }
+
+                ShowError("Please type Y, A, or N.");
+            }
         }
 
         // ===================== PAYMENT =====================
@@ -395,7 +422,57 @@ namespace makdo_project
         static void ProcessPayment()
         {
             // PAYMENT AND CHANGE - ALYSSA
-            // TODO: accept payment and calculate change
+            paymentSuccessful = false;
+            cashReceived = 0;
+            changeAmount = 0;
+
+            Console.Clear();
+            ShowTitle("PAYMENT");
+            Console.WriteLine(" Total to pay   : " + Money(orderTotal));
+            Console.WriteLine(" Payment method : Cash");
+            Console.WriteLine(Dash());
+
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(" Cash received in pesos (C = cancel): PHP ");
+                Console.ResetColor();
+
+                string text = (Console.ReadLine() ?? "").Trim();
+
+                if (text.ToUpper() == "C")
+                {
+                    return;  
+                }
+
+                
+                decimal entered;
+                if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, Inv, out entered))
+                {
+                    ShowError("Enter a valid amount, for example 500 or 250.50.");
+                    continue;
+                }
+
+                
+                int dotPosition = text.IndexOf('.');
+                if (dotPosition >= 0 && text.Length - dotPosition - 1 > 2)
+                {
+                    ShowError("Cash can have at most 2 decimal places.");
+                    continue;
+                }
+
+                if (entered < orderTotal)
+                {
+                    ShowError("Insufficient cash. You still need " + Money(orderTotal - entered) +
+                              ". Enter the full amount again, or C to cancel.");
+                    continue;   
+                }
+
+                cashReceived = entered;
+                changeAmount = entered - orderTotal;
+                paymentSuccessful = true;
+                return;
+            }
         }
 
         // ===================== RECEIPT =====================
@@ -403,13 +480,38 @@ namespace makdo_project
         static void GenerateOrderID()
         {
             // RECEIPT AND ORDER ID - VAN
-            // TODO: craete a unique order id
+            int highest = 0;
+            string[] lines = ReadOrders();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] fields = lines[i].Trim().Split('|');
+                string id = fields[0];
+
+                int number;
+                if (id.StartsWith("ORD") && int.TryParse(id.Substring(3), out number))
+                {
+                    if (number > highest)
+                    {
+                        highest = number;
+                    }
+                }
+            }
+
+            currentOrderId = "ORD" + (highest + 1).ToString("D4");
+            currentOrderDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm", Inv);
         }
 
         static void PrintReceipt()
         {
             // RECEIPT AND ORDER ID - VAN
-            // TODO: display the receipt
+            Console.Clear();
+            ShowTitle(RestaurantName + " RECEIPT");
+
+            
+            PrintSavedOrder(BuildRecord().Split('|'));
+
+            Console.WriteLine(Center("Thank you! Please come again.", ScreenWidth));
         }
 
         // ===================== FILE HANDLING =====================
