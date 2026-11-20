@@ -399,7 +399,22 @@ namespace makdo_project
         static void ConfirmOrder()
         {
             // ORDER CONFIRMATION - KIEL
-            // TODO: ask customer to confirm or cancel
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("[Y] Confirm  [A] Add more items  [N] Cancel: ");
+                Console.ResetColor();
+
+                string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (answer == "Y" || answer == "A" || answer == "N")
+                {
+                    reviewChoice = answer;
+                    return;
+                }
+
+                ShowError("Please type Y, A, or N.");
+            }
         }
 
         // ===================== PAYMENT =====================
