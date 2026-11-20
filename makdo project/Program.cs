@@ -384,8 +384,14 @@ namespace makdo_project
         static decimal CalculateTotal()
         {
             // TOTAL CALCULATION - VALMONTE
-            // TODO: calculate the total price
-            return 0;   // placeholder so the project compiles (this method must return a decimal)
+            decimal total = 0;
+
+            for (int number = 1; number <= TotalItems(); number++)
+            {
+                total += ItemQty(number) * ItemPrice(number);
+            }
+
+            return total;
         }
 
         // ===================== CONFIRMATION (KIEL) =====================
@@ -393,7 +399,22 @@ namespace makdo_project
         static void ConfirmOrder()
         {
             // ORDER CONFIRMATION - KIEL
-            // TODO: ask customer to confirm or cancel
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("[Y] Confirm  [A] Add more items  [N] Cancel: ");
+                Console.ResetColor();
+
+                string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (answer == "Y" || answer == "A" || answer == "N")
+                {
+                    reviewChoice = answer;
+                    return;
+                }
+
+                ShowError("Please type Y, A, or N.");
+            }
         }
 
         // ===================== PAYMENT =====================
