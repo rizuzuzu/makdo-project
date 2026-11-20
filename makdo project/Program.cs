@@ -384,8 +384,14 @@ namespace makdo_project
         static decimal CalculateTotal()
         {
             // TOTAL CALCULATION - VALMONTE
-            // TODO: calculate the total price
-            return 0;   // placeholder so the project compiles (this method must return a decimal)
+            decimal total = 0;
+
+            for (int number = 1; number <= TotalItems(); number++)
+            {
+                total += ItemQty(number) * ItemPrice(number);
+            }
+
+            return total;
         }
 
         // ===================== CONFIRMATION (KIEL) =====================
