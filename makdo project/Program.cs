@@ -480,13 +480,38 @@ namespace makdo_project
         static void GenerateOrderID()
         {
             // RECEIPT AND ORDER ID - VAN
-            // TODO: craete a unique order id
+            int highest = 0;
+            string[] lines = ReadOrders();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] fields = lines[i].Trim().Split('|');
+                string id = fields[0];
+
+                int number;
+                if (id.StartsWith("ORD") && int.TryParse(id.Substring(3), out number))
+                {
+                    if (number > highest)
+                    {
+                        highest = number;
+                    }
+                }
+            }
+
+            currentOrderId = "ORD" + (highest + 1).ToString("D4");
+            currentOrderDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm", Inv);
         }
 
         static void PrintReceipt()
         {
             // RECEIPT AND ORDER ID - VAN
-            // TODO: display the receipt
+            Console.Clear();
+            ShowTitle(RestaurantName + " RECEIPT");
+
+            
+            PrintSavedOrder(BuildRecord().Split('|'));
+
+            Console.WriteLine(Center("Thank you! Please come again.", ScreenWidth));
         }
 
         // ===================== FILE HANDLING =====================
