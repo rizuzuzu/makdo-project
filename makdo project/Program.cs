@@ -422,7 +422,57 @@ namespace makdo_project
         static void ProcessPayment()
         {
             // PAYMENT AND CHANGE - ALYSSA
-            // TODO: accept payment and calculate change
+            paymentSuccessful = false;
+            cashReceived = 0;
+            changeAmount = 0;
+
+            Console.Clear();
+            ShowTitle("PAYMENT");
+            Console.WriteLine(" Total to pay   : " + Money(orderTotal));
+            Console.WriteLine(" Payment method : Cash");
+            Console.WriteLine(Dash());
+
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(" Cash received in pesos (C = cancel): PHP ");
+                Console.ResetColor();
+
+                string text = (Console.ReadLine() ?? "").Trim();
+
+                if (text.ToUpper() == "C")
+                {
+                    return;  
+                }
+
+                
+                decimal entered;
+                if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, Inv, out entered))
+                {
+                    ShowError("Enter a valid amount, for example 500 or 250.50.");
+                    continue;
+                }
+
+                
+                int dotPosition = text.IndexOf('.');
+                if (dotPosition >= 0 && text.Length - dotPosition - 1 > 2)
+                {
+                    ShowError("Cash can have at most 2 decimal places.");
+                    continue;
+                }
+
+                if (entered < orderTotal)
+                {
+                    ShowError("Insufficient cash. You still need " + Money(orderTotal - entered) +
+                              ". Enter the full amount again, or C to cancel.");
+                    continue;   
+                }
+
+                cashReceived = entered;
+                changeAmount = entered - orderTotal;
+                paymentSuccessful = true;
+                return;
+            }
         }
 
         // ===================== RECEIPT =====================
