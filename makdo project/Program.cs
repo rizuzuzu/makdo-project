@@ -520,15 +520,40 @@ namespace makdo_project
         static void SaveOrder()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
-            // TODO: save mga paid orders into a text file
+            orderSaved = false;
+
+            try
+            {
+                Directory.CreateDirectory(RecordsFolder);
+                File.AppendAllText(GetOrdersPath(), BuildRecord() + Environment.NewLine);
+                orderSaved = true;
+            }
+            catch (Exception)
+            {
+                ShowError("Could not save the order to " + GetOrdersPath() + ".");
+            }
         }
 
         
         static string[] ReadOrders()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
-            // TODO: read saved orders from the text file
-            return new string[0];   // placeholder so the project compiles (this method must return string[])
+            string path = GetOrdersPath();
+
+            if (!File.Exists(path))
+            {
+                return new string[0];
+            }
+
+            try
+            {
+                return File.ReadAllLines(path);
+            }
+            catch (Exception)
+            {
+                ShowError("Could not read the records file.");
+                return new string[0];
+            }
         }
 
         static string GetOrdersPath()
@@ -611,13 +636,93 @@ namespace makdo_project
         static void FindOrder()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
-            // TODO: search for an order using the order id
+            Console.Clear();
+            ShowTitle("VIEW ORDER BY ID");
+
+            Console.Write("Enter Order ID (e.g. ORD0001): ");
+            string input = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+            if (input == "")
+            {
+                ShowError("Please enter an Order ID, for example ORD0001.");
+                PressAnyKey();
+                return;
+            }
+
+            string[] lines = ReadOrders();
+            string[]? found = null;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] fields = lines[i].Trim().Split('|');
+
+                if (IsPaidRecord(fields) && fields[0].ToUpper() == input)
+                {
+                    found = fields;
+                    break;
+                }
+            }
+
+            Console.WriteLine();
+
+            if (found == null)
+            {
+                ShowError("Order not found.");
+            }
+            else
+            {
+                PrintSavedOrder(found);
+            }
+
+            PressAnyKey();
         }
 
         static void ShowSales()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
-            // TODO: display completed orders and total sales
+            Console.Clear();
+            ShowTitle("SALES SUMMARY");
+
+            string[] lines = ReadOrders();
+            int orderCount = 0;
+            decimal totalSales = 0;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] fields = lines[i].Trim().Split('|');
+
+                decimal amount;
+                if (!IsPaidRecord(fields) || !decimal.TryParse(fields[3], NumberStyles.Number, Inv, out amount))
+                {
+                    continue;   
+                }
+
+                if (orderCount == 0)
+                {
+                    Console.WriteLine(" " + "Order ID".PadRight(11) + "Date".PadRight(20) + "Total".PadLeft(18));
+                    Console.WriteLine(Dash());
+                }
+
+                orderCount++;
+                totalSales += amount;   
+                Console.WriteLine(" " + fields[0].PadRight(11) + fields[6].PadRight(20) + Money(amount).PadLeft(18));
+            }
+
+            if (orderCount > 0)
+            {
+                Console.WriteLine(Dash());
+            }
+
+            Console.WriteLine(" Completed orders : " + orderCount);
+            Console.WriteLine(" Total sales      : " + Money(totalSales));
+            Console.WriteLine(Bar());
+
+            if (orderCount == 0)
+            {
+                ShowInfo("No sales yet");
+            }
+
+            PressAnyKey();
         }
 
         
