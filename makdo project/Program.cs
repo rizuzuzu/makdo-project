@@ -76,7 +76,7 @@ namespace makdo_project
 
                     default:
                         ShowError("Invalid choice. Please enter 1, 2, or 3.");
-                        PressAnyKey();   
+                        PressAnyKey();
                         break;
                 }
             }
@@ -189,13 +189,13 @@ namespace makdo_project
 
                 if (reviewChoice == "Y")
                 {
-                    break;   
+                    break;
                 }
-           
+
             }
 
             // ---------- STEP 2: payment ----------
-            ProcessPayment();     
+            ProcessPayment();
 
             if (!paymentSuccessful)
             {
@@ -204,8 +204,8 @@ namespace makdo_project
             }
 
             // ---------- STEP 3: order ID, save, receipt ----------
-            GenerateOrderID();    
-            SaveOrder();          
+            GenerateOrderID();
+            SaveOrder();
 
             if (!orderSaved)
             {
@@ -213,14 +213,14 @@ namespace makdo_project
                 return;
             }
 
-            PrintReceipt();       
-            ClearCart();          
+            PrintReceipt();
+            ClearCart();
 
             Console.WriteLine();
             PressAnyKey("Press any key to return to the main menu...");
         }
 
-        
+
         static string AskNextStep()
         {
             while (true)
@@ -248,7 +248,7 @@ namespace makdo_project
             }
         }
 
-       
+
         static void CancelAndReturn(string message)
         {
             ResetOrder();
@@ -289,7 +289,7 @@ namespace makdo_project
             Console.WriteLine(Bar());
         }
 
-        
+
         static void PrintMenuLine(int number, string name, decimal price)
         {
             string tag = "[" + number + "]";
@@ -306,15 +306,21 @@ namespace makdo_project
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Enter item number (0 = none): ");
+                Console.Write("Enter item number (X = none): ");
                 Console.ResetColor();
 
                 string input = (Console.ReadLine() ?? "").Trim();
 
-                int number;
-                if (!int.TryParse(input, out number) || number < 0 || number > TotalItems())
+                if (input.ToUpper() == "X")
                 {
-                    ShowError("Invalid item. Please enter a number from 0 to " + TotalItems() + ".");
+                    selectedItem = 0;   // 0 is only the internal "nothing selected" value
+                    return;
+                }
+
+                int number;
+                if (!int.TryParse(input, out number) || number < 1 || number > TotalItems())
+                {
+                    ShowError("Invalid item. Please enter a number from 1 to " + TotalItems() + ", or X for none.");
                     continue;
                 }
 
@@ -330,7 +336,7 @@ namespace makdo_project
             // QUANTITY SELECTION - EDYRIE
             if (selectedItem == 0)
             {
-                return;   
+                return;
             }
 
             Console.WriteLine("Selected: " + ItemName(selectedItem) + " - " + Money(ItemPrice(selectedItem)));
@@ -343,7 +349,7 @@ namespace makdo_project
 
                 string text = (Console.ReadLine() ?? "").Trim();
 
-                
+
                 int quantity;
                 if (!int.TryParse(text, out quantity) || quantity < 1 || quantity > MaxQtyPerItem)
                 {
@@ -351,7 +357,7 @@ namespace makdo_project
                     continue;
                 }
 
-                
+
                 if (ItemQty(selectedItem) + quantity > MaxQtyPerItem)
                 {
                     ShowError("Maximum is " + MaxQtyPerItem + " per item. You already have " + ItemQty(selectedItem) + ".");
@@ -380,7 +386,7 @@ namespace makdo_project
 
         // ===================== TOTAL (VALMONTE) =====================
 
-        
+
         static decimal CalculateTotal()
         {
             // TOTAL CALCULATION - VALMONTE
@@ -442,10 +448,10 @@ namespace makdo_project
 
                 if (text.ToUpper() == "C")
                 {
-                    return;  
+                    return;
                 }
 
-                
+
                 decimal entered;
                 if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, Inv, out entered))
                 {
@@ -453,7 +459,7 @@ namespace makdo_project
                     continue;
                 }
 
-                
+
                 int dotPosition = text.IndexOf('.');
                 if (dotPosition >= 0 && text.Length - dotPosition - 1 > 2)
                 {
@@ -465,7 +471,7 @@ namespace makdo_project
                 {
                     ShowError("Insufficient cash. You still need " + Money(orderTotal - entered) +
                               ". Enter the full amount again, or C to cancel.");
-                    continue;   
+                    continue;
                 }
 
                 cashReceived = entered;
@@ -508,7 +514,7 @@ namespace makdo_project
             Console.Clear();
             ShowTitle(RestaurantName + " RECEIPT");
 
-            
+
             PrintSavedOrder(BuildRecord().Split('|'));
 
             Console.WriteLine(Center("Thank you! Please come again.", ScreenWidth));
@@ -516,7 +522,7 @@ namespace makdo_project
 
         // ===================== FILE HANDLING =====================
 
-        
+
         static void SaveOrder()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
@@ -534,7 +540,7 @@ namespace makdo_project
             }
         }
 
-        
+
         static string[] ReadOrders()
         {
             // CASHIER VIEW AND FILE HANDLING - SHIENA
@@ -694,7 +700,7 @@ namespace makdo_project
                 decimal amount;
                 if (!IsPaidRecord(fields) || !decimal.TryParse(fields[3], NumberStyles.Number, Inv, out amount))
                 {
-                    continue;   
+                    continue;
                 }
 
                 if (orderCount == 0)
@@ -704,7 +710,7 @@ namespace makdo_project
                 }
 
                 orderCount++;
-                totalSales += amount;   
+                totalSales += amount;
                 Console.WriteLine(" " + fields[0].PadRight(11) + fields[6].PadRight(20) + Money(amount).PadLeft(18));
             }
 
@@ -725,7 +731,7 @@ namespace makdo_project
             PressAnyKey();
         }
 
-        
+
         static void PrintSavedOrder(string[] f)
         {
             Console.WriteLine(" Restaurant : " + RestaurantName);
@@ -739,7 +745,7 @@ namespace makdo_project
 
             for (int i = 0; i < parts.Length; i++)
             {
-                string[] cols = parts[i].Split(',');   
+                string[] cols = parts[i].Split(',');
                 if (cols.Length != 4)
                 {
                     continue;
@@ -817,7 +823,7 @@ namespace makdo_project
             Array.Clear(drinksqty);
         }
 
-        
+
         static void ResetOrder()
         {
             ClearCart();
@@ -842,7 +848,7 @@ namespace makdo_project
             return count;
         }
 
-        
+
         static void PrintCartLines()
         {
             PrintItemHeader();
@@ -925,13 +931,13 @@ namespace makdo_project
             return new string(' ', spaces) + text;
         }
 
-        
+
         static string Money(decimal value)
         {
             return "PHP " + value.ToString("N2", Inv);
         }
 
-        
+
         static string MoneyText(string text)
         {
             decimal value;
