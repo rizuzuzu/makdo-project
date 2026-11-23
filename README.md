@@ -1,5 +1,10 @@
 # makdo project
 
+
+flowcharts:
+
+[MAKDO_Flowcharts (1).pdf](https://github.com/user-attachments/files/35272721/MAKDO_Flowcharts.1.pdf)
+
 BASIC GITHUB ETTIQUETTE RULES
 
 1. DO NOT edit the main branch directly pag mag cocommit kayo ng changes
