@@ -97,13 +97,15 @@ Solution:
 
 MAKDO - Console-Based Food Kiosk
 Group 3
-flowcharts:
+
+
+# flowcharts:
 
 [FINAL_MAKDO_Flowcharts.pdf](https://github.com/user-attachments/files/35278013/FINAL_MAKDO_Flowcharts.pdf)
 
 
-
-BASIC GITHUB ETTIQUETTE RULES
+# (FOR COLLABORATORS)
+# BASIC GITHUB ETTIQUETTE RULES
 
 1. DO NOT edit the main branch directly pag mag cocommit kayo ng changes
 
