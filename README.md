@@ -1,5 +1,102 @@
 
+# MAKDO - Setup and Installation Guide
 
+## Prerequisites
+
+Before running the project, make sure you have the following installed:
+
+- Windows 10 or Windows 11
+- .NET SDK (version compatible with the project)
+- Visual Studio or Visual Studio Code
+
+## 1. Download the Project
+
+1. Open the MAKDO GitHub repository.
+2. Click the green **Code** button.
+3. Select **Download ZIP**.
+4. Extract the downloaded ZIP file to your computer.
+5. Open the extracted project folder.
+
+Alternatively, clone the repository using Git:
+
+```bash
+git clone YOUR_REPOSITORY_LINK
+```
+
+## 2. Open the Project
+
+1. Open the extracted MAKDO project folder.
+2. Locate the `.csproj` file.
+3. Open the folder using Visual Studio Code or open the project using Visual Studio.
+4. If using Visual Studio Code, open the integrated terminal by pressing `Ctrl + ``.
+
+## 3. Restore Project Dependencies
+
+Open a terminal in the directory containing the `.csproj` file.
+
+Run the following command:
+
+```bash
+dotnet restore
+```
+
+This restores the required project dependencies.
+
+## 4. Build the Project
+
+After restoring the dependencies, run:
+
+```bash
+dotnet build
+```
+
+This compiles the project and checks for build errors.
+
+Make sure the build completes successfully before proceeding.
+
+## 5. Run the Application
+
+To start the MAKDO Console-Based Food Kiosk, execute:
+
+```bash
+dotnet run
+```
+
+The application will launch in the console terminal.
+
+Follow the on-screen instructions to navigate the system and use its features.
+
+## 6. Exiting the Application
+
+Follow the available exit option displayed in the program's main menu to close the application.
+
+## Troubleshooting
+
+**Problem: 'dotnet' is not recognized as a command.**
+
+Solution: Make sure the .NET SDK is installed correctly and restart your terminal.
+
+**Problem: Project build failed.**
+
+Solution:
+- Check whether the correct .NET SDK is installed.
+- Make sure all project files are present.
+- Run `dotnet restore` again.
+- Check the terminal for error messages.
+
+**Problem: Application does not start.**
+
+Solution:
+- Make sure you are in the correct project directory.
+- Verify that the `.csproj` file exists.
+- Run `dotnet build` and resolve any reported errors before running again.
+
+---
+
+**END OF SETUP GUIDE**
+
+MAKDO - Console-Based Food Kiosk
+Group 3
 flowcharts:
 
 [FINAL_MAKDO_Flowcharts.pdf](https://github.com/user-attachments/files/35278013/FINAL_MAKDO_Flowcharts.pdf)
