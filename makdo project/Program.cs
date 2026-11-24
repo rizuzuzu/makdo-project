@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 /*===================================
@@ -31,6 +31,8 @@ namespace makdo_project
 
         // ---------- Shared order information (used by many methods) ----------
         static int selectedItem = 0;              // item number picked in TakeOrder (0 = none)
+        static int lastAddedItem = 0;             // item number of the most recent add (0 = none)
+        static int lastAddedQty = 0;              // quantity of the most recent add
         static string reviewChoice = "";          // set by ConfirmOrder: "Y", "A" or "N"
         static bool paymentSuccessful = false;    // set by ProcessPayment
         static bool orderSaved = false;           // set by SaveOrder
@@ -154,9 +156,10 @@ namespace makdo_project
 
                     string next = AskNextStep();
 
-                    if (next == "X")
+                    if (next == "A")
                     {
-                        CancelAndReturn("Order cancelled.");
+                        // cancel ALL items
+                        CancelAndReturn("All items cancelled.");
                         return;
                     }
 
@@ -230,7 +233,8 @@ namespace makdo_project
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("[Y] Add another item");
                 Console.WriteLine("[N] Done ordering, review my order");
-                Console.WriteLine("[X] Cancel order and go back");
+                Console.WriteLine("[P] Cancel previous item");
+                Console.WriteLine("[A] Cancel ALL items and go back");
                 Console.ResetColor();
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -239,13 +243,38 @@ namespace makdo_project
 
                 string answer = (Console.ReadLine() ?? "").Trim().ToUpper();
 
-                if (answer == "Y" || answer == "N" || answer == "X")
+                if (answer == "P")
+                {
+                    CancelPreviousItem();
+                    return "Y";   // go back to the menu so the customer can keep ordering
+                }
+
+                if (answer == "Y" || answer == "N" || answer == "A")
                 {
                     return answer;
                 }
 
-                ShowError("Invalid choice. Please enter Y, N, or X.");
+                ShowError("Invalid choice. Please enter Y, N, P, or A.");
             }
+        }
+
+
+        static void CancelPreviousItem()
+        {
+            if (lastAddedItem == 0 || lastAddedQty == 0)
+            {
+                ShowError("There is no previous item to cancel.");
+                PressAnyKey();
+                return;
+            }
+
+            // remove only what was added in the last step
+            AddQty(lastAddedItem, -lastAddedQty);
+            ShowInfo("Cancelled: " + lastAddedQty + " x " + ItemName(lastAddedItem));
+
+            lastAddedItem = 0;   // only the very last add can be undone
+            lastAddedQty = 0;
+            PressAnyKey();
         }
 
 
@@ -313,7 +342,7 @@ namespace makdo_project
 
                 if (input.ToUpper() == "X")
                 {
-                    selectedItem = 0;   // 0 is only the internal "nothing selected" value
+                    selectedItem = 0;
                     return;
                 }
 
@@ -365,6 +394,8 @@ namespace makdo_project
                 }
 
                 AddQty(selectedItem, quantity);
+                lastAddedItem = selectedItem;
+                lastAddedQty = quantity;
                 ShowSuccess("Added: " + quantity + " x " + ItemName(selectedItem));
                 return;
             }
@@ -429,7 +460,7 @@ namespace makdo_project
         {
             // PAYMENT AND CHANGE - ALYSSA
             paymentSuccessful = false;
-            cashReceived = 0;
+            cashReceived = 0;       // running total of all cash entered so far
             changeAmount = 0;
 
             Console.Clear();
@@ -438,7 +469,7 @@ namespace makdo_project
             Console.WriteLine(" Payment method : Cash");
             Console.WriteLine(Dash());
 
-            while (true)
+            while (cashReceived < orderTotal)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(" Cash received in pesos (C = cancel): PHP ");
@@ -448,17 +479,21 @@ namespace makdo_project
 
                 if (text.ToUpper() == "C")
                 {
+                    if (cashReceived > 0)
+                    {
+                        ShowInfo("Please collect your refund of " + Money(cashReceived) + ".");
+                    }
+
+                    cashReceived = 0;
                     return;
                 }
 
-
                 decimal entered;
-                if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, Inv, out entered))
+                if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, Inv, out entered) || entered <= 0)
                 {
                     ShowError("Enter a valid amount, for example 500 or 250.50.");
                     continue;
                 }
-
 
                 int dotPosition = text.IndexOf('.');
                 if (dotPosition >= 0 && text.Length - dotPosition - 1 > 2)
@@ -467,18 +502,17 @@ namespace makdo_project
                     continue;
                 }
 
-                if (entered < orderTotal)
-                {
-                    ShowError("Insufficient cash. You still need " + Money(orderTotal - entered) +
-                              ". Enter the full amount again, or C to cancel.");
-                    continue;
-                }
+                cashReceived += entered;   // accumulate instead of replacing
 
-                cashReceived = entered;
-                changeAmount = entered - orderTotal;
-                paymentSuccessful = true;
-                return;
+                if (cashReceived < orderTotal)
+                {
+                    ShowError("Insufficient cash. Paid so far: " + Money(cashReceived) +
+                              ". You still need " + Money(orderTotal - cashReceived) + ".");
+                }
             }
+
+            changeAmount = cashReceived - orderTotal;
+            paymentSuccessful = true;
         }
 
         // ===================== RECEIPT =====================
@@ -828,6 +862,8 @@ namespace makdo_project
         {
             ClearCart();
             selectedItem = 0;
+            lastAddedItem = 0;
+            lastAddedQty = 0;
             reviewChoice = "";
             paymentSuccessful = false;
             orderSaved = false;
